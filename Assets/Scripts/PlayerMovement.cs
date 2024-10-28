@@ -13,6 +13,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rb;
     private Transform playerFeet;
     private LayerMask groundLayer;
+    private LayerMask screenLayer;
     private Animator animator;
 
     private bool isDashing;
@@ -36,6 +37,7 @@ public class PlayerMovement : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
         playerFeet = gameObject.transform.GetChild(1);
         groundLayer = LayerMask.GetMask("Ground");
+        screenLayer = LayerMask.GetMask("Screen");
 
     }
 
@@ -46,7 +48,13 @@ public class PlayerMovement : MonoBehaviour
         {
             return;
         }
-        
+
+        if (IsPlayerInside() && Input.GetKeyDown(KeyCode.E))
+        {
+            //Time.timeScale = 0f;
+            UseAnimation();
+            
+        }
 
         FlipPlayer();
         Jump();
@@ -76,6 +84,18 @@ public class PlayerMovement : MonoBehaviour
             transform.position += platformMovement;
             lastPlatformPosition = currentPlatform.position;
         }
+    }
+
+    private bool IsPlayerInside()
+    {
+        return Physics2D.OverlapCircle(transform.position, 0.2f, screenLayer);
+    }
+
+    private void UseAnimation()
+    {
+        Debug.Log("hola");
+        animator.SetBool("isUsing", true);
+        animator.CrossFade("Use", 5f, 5);
     }
 
     /// <summary>
