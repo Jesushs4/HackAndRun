@@ -52,7 +52,7 @@ public class PlayerMovement : MonoBehaviour
         if (IsPlayerInside() && Input.GetKeyDown(KeyCode.E))
         {
             //Time.timeScale = 0f;
-            UseAnimation();
+            StartCoroutine(UseAnimation());
             
         }
 
@@ -88,14 +88,16 @@ public class PlayerMovement : MonoBehaviour
 
     private bool IsPlayerInside()
     {
-        return Physics2D.OverlapCircle(transform.position, 0.2f, screenLayer);
+
+        return Physics2D.OverlapCircle(transform.position, 0.5f, screenLayer);
     }
 
-    private void UseAnimation()
+    private IEnumerator UseAnimation()
     {
-        Debug.Log("hola");
-        animator.SetBool("isUsing", true);
-        animator.CrossFade("Use", 5f, 5);
+        animator.Play("Use");
+        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
+
+        animator.Play("Idle");
     }
 
     /// <summary>

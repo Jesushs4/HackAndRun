@@ -6,6 +6,7 @@ TagManager:
   tags:
   - DeathBarrier
   - HorizontalPlatform
+  - Button
   layers:
   - Default
   - TransparentFX

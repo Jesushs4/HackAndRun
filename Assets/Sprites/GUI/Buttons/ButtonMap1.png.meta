@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 63972b4866bf43e43b21caa7f58678e5
+guid: afdb78cfdffd27541a342185476f4c32
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -43,7 +43,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -95,7 +95,28 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: ButtonMap1_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 224
+        width: 96
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5e120a4baa0f04748b1dc7898b97beaa
+      internalID: 2069166835
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -106,7 +127,39 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      ButtonMap1_0: 2069166835
+      ButtonMap1_1: -747636685
+      ButtonMap1_10: -1473728283
+      ButtonMap1_11: -1350685859
+      ButtonMap1_12: 1547782121
+      ButtonMap1_13: 112771991
+      ButtonMap1_14: 202460210
+      ButtonMap1_15: -1884898518
+      ButtonMap1_16: -764618615
+      ButtonMap1_17: 360414256
+      ButtonMap1_18: -3423330
+      ButtonMap1_19: -1095352049
+      ButtonMap1_2: -1853246787
+      ButtonMap1_20: 1763559204
+      ButtonMap1_21: 278383392
+      ButtonMap1_22: 259946024
+      ButtonMap1_23: -1541639604
+      ButtonMap1_24: -1739713170
+      ButtonMap1_25: 1922992915
+      ButtonMap1_26: -332446281
+      ButtonMap1_27: -2036664706
+      ButtonMap1_28: -1266726631
+      ButtonMap1_29: 1923503342
+      ButtonMap1_3: 797402764
+      ButtonMap1_30: -119934094
+      ButtonMap1_31: -503707983
+      ButtonMap1_4: -637179088
+      ButtonMap1_5: 1777707184
+      ButtonMap1_6: -886451115
+      ButtonMap1_7: 451108283
+      ButtonMap1_8: 1650526533
+      ButtonMap1_9: -564631375
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
