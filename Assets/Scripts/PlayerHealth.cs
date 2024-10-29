@@ -15,7 +15,7 @@ public class PlayerHealth : MonoBehaviour
     {
         if (collision.CompareTag("DeathBarrier"))
         {
-            Time.timeScale = 0f;
+            GameManager.Instance.GameOver();
         }
     }
 }
