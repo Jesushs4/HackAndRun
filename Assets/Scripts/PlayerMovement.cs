@@ -15,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
     private LayerMask groundLayer;
     private LayerMask screenLayer;
     private Animator animator;
+    private SpriteRenderer playerSprite;
 
     private bool isDashing;
     private bool canDash = true;
@@ -38,6 +39,7 @@ public class PlayerMovement : MonoBehaviour
         playerFeet = gameObject.transform.GetChild(1);
         groundLayer = LayerMask.GetMask("Ground");
         screenLayer = LayerMask.GetMask("Screen");
+        playerSprite = GetComponentInChildren<SpriteRenderer>();
 
     }
 
@@ -98,6 +100,7 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
 
         animator.Play("Idle");
+        GameManager.Instance.WinGame();
     }
 
     /// <summary>
@@ -185,6 +188,9 @@ public class PlayerMovement : MonoBehaviour
         isDashing = false;
         animator.SetBool("isDashing", false);
         yield return new WaitForSeconds(dashCooldown);
+        playerSprite.color = Color.yellow;
+        yield return new WaitForSeconds(0.15f);
+        playerSprite.color = Color.white;
         canDash = true;
     }
 

@@ -26,12 +26,13 @@ public class GameManager : MonoBehaviour
 
     public void WinGame()
     {
-
+        winGamePanel.SetActive(true);
+        Time.timeScale = 0f;
     }
 
     public void GameOver()
     {
-        gameOverPanel.SetActive(false);
+        gameOverPanel.SetActive(true);
         Time.timeScale = 0f;
     }
 
