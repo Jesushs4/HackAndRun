@@ -5,8 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - DeathBarrier
-  - HorizontalPlatform
   - Button
+  - Enemy
+  - MovingPlatform
   layers:
   - Default
   - TransparentFX
