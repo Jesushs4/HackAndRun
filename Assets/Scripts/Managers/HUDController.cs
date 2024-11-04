@@ -26,9 +26,8 @@ public class HUDController : MonoBehaviour
 
     void Update()
     {
-        health = GameManager.Instance.Health;
+        
         UpdateHealthBar();
-
 
         GameManager.Instance.Timer += Time.deltaTime;
 
@@ -46,6 +45,7 @@ public class HUDController : MonoBehaviour
     /// </summary>
     private void UpdateHealthBar()
     {
+        health = GameManager.Instance.Health;
         for (int i = 0; i < healthBar.Length; i++)
         {
             if (i >= health)

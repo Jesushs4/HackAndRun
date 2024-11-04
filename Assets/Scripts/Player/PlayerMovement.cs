@@ -23,6 +23,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float dashCooldown = 1f;
     [SerializeField] private float dashPower = 12f;
 
+    private bool isHacking;
+
     // Cinemachine shake variables
     [SerializeField] private CinemachineVirtualCamera vCam;
     [SerializeField] private float shakeAmplitude = 1f;
@@ -31,6 +33,8 @@ public class PlayerMovement : MonoBehaviour
 
     private Transform currentPlatform;
     private Vector3 lastPlatformPosition;
+
+    public bool IsDashing { get => isDashing; set => isDashing = value; }
 
     private void Awake()
     {
@@ -46,16 +50,14 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
 
-        if (isDashing)
+        if (IsDashing || isHacking)
         {
             return;
         }
 
-        if (IsPlayerInside() && Input.GetKeyDown(KeyCode.E))
+        if (IsPlayerInsideHack() && Input.GetKeyDown(KeyCode.E))
         {
-            //Time.timeScale = 0f;
             StartCoroutine(UseAnimation());
-            
         }
 
         FlipPlayer();
@@ -73,7 +75,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (isDashing)
+        if (IsDashing)
         {
             return;
         }
@@ -88,9 +90,8 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private bool IsPlayerInside()
+    private bool IsPlayerInsideHack()
     {
-
         return Physics2D.OverlapCircle(transform.position, 0.5f, screenLayer);
     }
 
@@ -98,9 +99,9 @@ public class PlayerMovement : MonoBehaviour
     {
         animator.Play("Use");
         yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
-
         animator.Play("Idle");
-        GameManager.Instance.WinGame();
+        isHacking = true;
+        GameManager.Instance.HackMinigame();
     }
 
     /// <summary>
@@ -182,8 +183,9 @@ public class PlayerMovement : MonoBehaviour
     private IEnumerator Dash()
     {
         canDash = false;
-        isDashing = true;
+        IsDashing = true;
         animator.SetBool("isDashing", true);
+
         float originalGravity = rb.gravityScale;
         rb.gravityScale = 0;
         rb.velocity = new Vector2(transform.localScale.x * dashPower, 0);
@@ -192,8 +194,9 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForSeconds(dashTime);
 
         rb.gravityScale = originalGravity;
-        isDashing = false;
+        IsDashing = false;
         animator.SetBool("isDashing", false);
+
         yield return new WaitForSeconds(dashCooldown);
         playerSprite.color = Color.yellow;
         yield return new WaitForSeconds(0.15f);

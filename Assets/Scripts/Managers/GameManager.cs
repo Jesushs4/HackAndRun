@@ -12,8 +12,9 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] GameObject gameOverPanel;
     [SerializeField] GameObject winGamePanel;
-    
-    
+    [SerializeField] GameObject hackPanel;
+
+    private HackMinigame hackMinigame;
 
     [SerializeField] int[] starsTimer = new int[] { 120, 60 };
     private Transform starsObject;
@@ -36,8 +37,14 @@ public class GameManager : MonoBehaviour
         starsObject = winGamePanel.transform.Find("Stars");
         starsImages = starsObject.GetComponentsInChildren<Image>();
 
+        hackMinigame = hackPanel.GetComponent<HackMinigame>();
 
         Time.timeScale = 1;
+    }
+
+    private void Start()
+    {
+        
     }
 
     private void Update()
@@ -77,25 +84,17 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0f;
     }
 
+    public void HackMinigame()
+    {
+        hackPanel.SetActive(true);
+        hackMinigame.StartHack();
+    }
+
     public void GameOver()
     {
         gameOverPanel.SetActive(true);
         Time.timeScale = 0f;
     }
-
-    /*public void ChangeScene(string sceneName)
-    {
-        if (sceneName.Equals(GameConstants.MAINMENU_KEY))
-        {
-            if (LevelManager.Instance.PlayerScore > Getint(GameConstants.HIGHSCORE_KEY))
-            {
-                SetInt(GameConstants.HIGHSCORE_KEY, LevelManager.Instance.PlayerScore);
-            }
-            LevelManager.Instance.PlayerScore = 0;
-        }
-        SceneManager.LoadScene(sceneName);
-
-    }*/
 
     public void NextLevel()
     {
