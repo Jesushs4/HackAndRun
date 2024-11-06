@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,6 +6,12 @@ public class AudioManager : MonoBehaviour
     public static AudioManager Instance;
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip[] levelClips;
+    [SerializeField] private AudioSource hackCorrect;
+    [SerializeField] private AudioSource hackFail;
+    [SerializeField] private AudioSource jumpSound;
+    [SerializeField] private AudioSource dashSound;
+    [SerializeField] private AudioSource hurtSound;
+
 
     private string currentScene = "";
 
@@ -49,6 +52,25 @@ public class AudioManager : MonoBehaviour
         audioSource.clip = clip;
         audioSource.Play();
     }
+
+    public void HackCorrect()
+    {
+        hackCorrect.Play();
+    }
+
+    public void HackFail()
+    {
+        hackFail.Play();
+    }
+
+    public void Dash()
+    {
+        dashSound.Play();
+    }
+
+    public void Jump() { jumpSound.Play(); }
+
+    public void Hurt () { hurtSound.Play(); }
 
 
 

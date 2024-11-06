@@ -1,6 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -40,19 +38,6 @@ public class GameManager : MonoBehaviour
         hackMinigame = hackPanel.GetComponent<HackMinigame>();
 
         Time.timeScale = 1;
-    }
-
-    private void Start()
-    {
-        
-    }
-
-    private void Update()
-    {
-        if (health == 0)
-        {
-           GameOver();
-        }
     }
 
     private void SaveStars(int stars)

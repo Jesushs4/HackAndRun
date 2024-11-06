@@ -1,6 +1,4 @@
-using Cinemachine;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -25,12 +23,6 @@ public class PlayerMovement : MonoBehaviour
 
     private bool isHacking;
 
-    // Cinemachine shake variables
-    [SerializeField] private CinemachineVirtualCamera vCam;
-    [SerializeField] private float shakeAmplitude = 1f;
-    [SerializeField] private float shakeFrequency = 1f;
-    [SerializeField] private float shakeDuration = 0.1f;
-
     private Transform currentPlatform;
     private Vector3 lastPlatformPosition;
 
@@ -50,38 +42,67 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
 
-        if (IsDashing || isHacking)
+        if (!CanMove())
         {
             return;
         }
 
-        if (IsPlayerInsideHack() && Input.GetKeyDown(KeyCode.E))
-        {
-            StartCoroutine(UseAnimation());
-        }
-
+        StartHacking();
         FlipPlayer();
         Jump();
-        hAxis = Input.GetAxisRaw("Horizontal");
-
-        if (canDash && Input.GetKeyDown(KeyCode.LeftShift))
-        {
-            StartCoroutine(Dash());
-        }
-
+        StartDash();
         JumpAnimation();
 
     }
 
     private void FixedUpdate()
     {
-        if (IsDashing)
+        if (!CanMove())
         {
             return;
         }
 
         MovePlayer();
+        MoveWithPlatform();
+    }
 
+    /// <summary>
+    /// Checks if the player is inside the hack panel
+    /// </summary>
+    /// <returns></returns>
+    private bool IsPlayerInsideHack()
+    {
+        return Physics2D.OverlapCircle(transform.position, 0.5f, screenLayer);
+    }
+
+    /// <summary>
+    /// Animation for using the hack panel
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator UseAnimation()
+    {
+        animator.SetTrigger("isUsing");
+        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
+        isHacking = true;
+        GameManager.Instance.HackMinigame();
+    }
+
+    /// <summary>
+    /// Checks if the player is trying to hack the panel
+    /// </summary>
+    private void StartHacking()
+    {
+        if (IsPlayerInsideHack() && Input.GetKeyDown(KeyCode.E))
+        {
+            StartCoroutine(UseAnimation());
+        }
+    }
+
+    /// <summary>
+    /// Moves the player transform with the platform he is in
+    /// </summary>
+    private void MoveWithPlatform()
+    {
         if (currentPlatform != null)
         {
             Vector3 platformMovement = currentPlatform.position - lastPlatformPosition;
@@ -90,25 +111,12 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private bool IsPlayerInsideHack()
-    {
-        return Physics2D.OverlapCircle(transform.position, 0.5f, screenLayer);
-    }
-
-    private IEnumerator UseAnimation()
-    {
-        animator.Play("Use");
-        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
-        animator.Play("Idle");
-        isHacking = true;
-        GameManager.Instance.HackMinigame();
-    }
-
     /// <summary>
     /// Movement of the player
     /// </summary>
     private void MovePlayer()
     {
+        hAxis = Input.GetAxisRaw("Horizontal");
         if (hAxis != 0)
         {
             animator.SetBool("isRunning", true);
@@ -130,7 +138,7 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetButtonDown("Jump") && IsGrounded())
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-
+            AudioManager.Instance.Jump();
         }
 
         if (Input.GetButtonUp("Jump") && rb.velocity.y > 0)
@@ -176,6 +184,18 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+
+    /// <summary>
+    /// Checks if the player tried and can dash
+    /// </summary>
+    private void StartDash()
+    {
+        if (canDash && Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            StartCoroutine(Dash());
+        }
+    }
+
     /// <summary>
     /// Allows the player to dash to right or left, with an specified distance and cooldown
     /// </summary>
@@ -185,6 +205,7 @@ public class PlayerMovement : MonoBehaviour
         canDash = false;
         IsDashing = true;
         animator.SetBool("isDashing", true);
+        AudioManager.Instance.Dash();
 
         float originalGravity = rb.gravityScale;
         rb.gravityScale = 0;
@@ -202,6 +223,24 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForSeconds(0.15f);
         playerSprite.color = Color.white;
         canDash = true;
+    }
+
+    /// <summary>
+    /// Checks if the player can move and stops velocity if needed
+    /// </summary>
+    /// <returns></returns>
+    private bool CanMove()
+    {
+        if (IsDashing)
+        {
+            return false;
+        }
+        if (isHacking || GameManager.Instance.Health <= 0)
+        {
+            rb.velocity = new Vector2(0, rb.velocity.y);
+            return false;
+        }
+        return true;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

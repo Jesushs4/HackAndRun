@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -12,9 +11,15 @@ public class DialogueBox : MonoBehaviour
     private string currentDialogue;
     [SerializeField] private string[] texts;
     private int dialoguePosition = 0;
-    private void Start()
+    private LayerMask playerLayer;
+    [SerializeField] private GameObject keyLabel;
+    [SerializeField] private GameObject dialoguePanel;
+
+
+    private void Awake()
     {
-        
+        playerLayer = LayerMask.GetMask("Player");
+
     }
 
     public void StartDialogue(string dialogue)
@@ -35,22 +40,37 @@ public class DialogueBox : MonoBehaviour
             yield return new WaitForSeconds(typingSpeed);
         }
 
-        yield return new WaitForSeconds(2f);
-
         isTyping = false;
 
-        
+    }
 
+    private bool IsPlayerInRange()
+    {
+        return Physics2D.OverlapCircle(transform.position, 0.5f, playerLayer);
     }
 
 
     private void Update()
     {
-        if (!isTyping && texts.Length > dialoguePosition)
+        if (IsPlayerInRange() && Input.GetKeyDown(KeyCode.E))
         {
-            dialogueText.text = "";
-            StartDialogue(texts[dialoguePosition]);
-            dialoguePosition++;
+            if (!dialoguePanel.activeSelf)
+            {
+                dialoguePanel.SetActive(true);
+                StartDialogue(texts[dialoguePosition]);
+                dialoguePosition++;
+                return;
+            }
+
+            if (!isTyping && texts.Length > dialoguePosition)
+            {
+                dialogueText.text = "";
+                StartDialogue(texts[dialoguePosition]);
+                dialoguePosition++;
+            }
         }
+
+
+
     }
 }

@@ -7,6 +7,7 @@ public class PlayerHealth : MonoBehaviour
     private bool canTakeDamage = true;
     private PlayerMovement playerMovement;
     private SpriteRenderer playerSprite;
+    private Animator animator;
     [SerializeField] private Color hurtColor = Color.red;
     [SerializeField] private float blinkDuration = 1f;
     [SerializeField] private int blinkCount = 4;
@@ -15,6 +16,7 @@ public class PlayerHealth : MonoBehaviour
     {
         playerMovement = GetComponent<PlayerMovement>();
         playerSprite = GetComponentInChildren<SpriteRenderer>();
+        animator = GetComponentInChildren<Animator>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -33,10 +35,14 @@ public class PlayerHealth : MonoBehaviour
         // If player collisions with an enemy he loses 1 HP
         if (collision.CompareTag("Enemy") && canTakeDamage && !playerMovement.IsDashing)
         {
-            Debug.Log(collision.ToString());
-
             StartCoroutine(PlayerHurt());
             GameManager.Instance.Health--;
+            AudioManager.Instance.Hurt();
+
+            if (GameManager.Instance.Health <= 0)
+            {
+                StartCoroutine(Death());
+            }
         }
     }
 
@@ -55,5 +61,12 @@ public class PlayerHealth : MonoBehaviour
         }
         yield return new WaitForSeconds(1f);
         canTakeDamage = true;
+    }
+
+    private IEnumerator Death()
+    {
+        animator.SetTrigger("isDead");
+        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
+        GameManager.Instance.GameOver();
     }
 }
