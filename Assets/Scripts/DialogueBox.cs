@@ -34,10 +34,23 @@ public class DialogueBox : MonoBehaviour
         dialogueText.text = "";
         isTyping = true;
 
-        foreach (char letter in currentDialogue)
+        string[] words = currentDialogue.Split(' ');
+
+        foreach (string word in words)
         {
-            dialogueText.text += letter;
-            yield return new WaitForSeconds(typingSpeed);
+            if (word.StartsWith("<") && word.EndsWith(">"))
+            {
+                dialogueText.text += word + "  ";
+            }
+            else
+            {
+                foreach (char letter in word)
+                {
+                    dialogueText.text += letter;
+                    yield return new WaitForSeconds(typingSpeed);
+                }
+                dialogueText.text += " ";
+            }
         }
 
         isTyping = false;

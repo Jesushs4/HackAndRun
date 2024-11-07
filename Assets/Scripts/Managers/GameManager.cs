@@ -1,4 +1,5 @@
 
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -11,12 +12,17 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject gameOverPanel;
     [SerializeField] GameObject winGamePanel;
     [SerializeField] GameObject hackPanel;
+    [SerializeField] GameObject pausePanel;
 
     private HackMinigame hackMinigame;
 
-    [SerializeField] int[] starsTimer = new int[] { 120, 60 };
-    private Transform starsObject;
-    private Image[] starsImages;
+    [SerializeField] int[] starsTimes = new int[] { 120, 120, 60 };
+    private Transform starsWinObject;
+    private Image[] starsWinImages;
+
+    private Transform starsPauseObject;
+    private Image[] starsPauseImages;
+
 
     [SerializeField] private int health = 3;
     private float timer = 0;
@@ -32,12 +38,72 @@ public class GameManager : MonoBehaviour
         gameOverPanel.SetActive(false);
         winGamePanel.SetActive(false);
 
-        starsObject = winGamePanel.transform.Find("Stars");
-        starsImages = starsObject.GetComponentsInChildren<Image>();
+        starsWinObject = winGamePanel.transform.Find("Stars");
+        starsWinImages = starsWinObject.GetComponentsInChildren<Image>();
+
+        starsPauseObject = pausePanel.transform.Find("Stars");
+        starsPauseImages = starsPauseObject.GetComponentsInChildren<Image>();
+
+
+
+        for (int i = 0; i < starsPauseImages.Length && i < starsTimes.Length; i++)
+        {
+            int timeInSeconds = starsTimes[i];
+
+            string formattedTime = (i == 0)
+                ? "+" + string.Format("{0:D2}:{1:D2}", timeInSeconds / 60, timeInSeconds % 60)
+                : string.Format("{0:D2}:{1:D2}", timeInSeconds / 60, timeInSeconds % 60);
+
+            starsPauseImages[i].transform.GetChild(0).GetComponent<TMP_Text>().text = formattedTime;
+        }
+
+
+        for (int i = 0; i < starsWinImages.Length && i < starsTimes.Length; i++)
+        {
+            int timeInSeconds = starsTimes[i];
+
+            string formattedTime = (i == 0)
+                ? "+" + string.Format("{0:D2}:{1:D2}", timeInSeconds / 60, timeInSeconds % 60)
+                : string.Format("{0:D2}:{1:D2}", timeInSeconds / 60, timeInSeconds % 60);
+
+            starsWinImages[i].transform.GetChild(0).GetComponent<TMP_Text>().text = formattedTime;
+        }
+
+
 
         hackMinigame = hackPanel.GetComponent<HackMinigame>();
 
         Time.timeScale = 1;
+    }
+
+    private void Update()
+    {
+        ManagePause();
+    }
+
+    private void ManagePause()
+    {
+
+        if (starsTimes[1] <= timer)
+        {
+            starsPauseImages[2].color = Color.black;
+        }
+        if (starsTimes[0] <= timer)
+        {
+            starsPauseImages[1].color = Color.black;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (pausePanel.activeSelf)
+            {
+                ResumeGame();
+            }
+            else
+            {
+                PauseGame();
+            }
+        }
     }
 
     private void SaveStars(int stars)
@@ -56,17 +122,34 @@ public class GameManager : MonoBehaviour
         }
         
         winGamePanel.SetActive(true);
-        if (starsTimer[1] > timer)
+        if (starsTimes[1] > timer)
         {
             SaveStars(3);
-            starsImages[2].color = Color.white;
+            starsWinImages[2].color = Color.white;
         }
-        if (starsTimer[0] > timer) {
+        if (starsTimes[0] > timer) {
             SaveStars(2);
-            starsImages[1].color = Color.white;
+            starsWinImages[1].color = Color.white;
         }
         SaveStars(1);
         Time.timeScale = 0f;
+    }
+
+    public void PauseGame()
+    {
+        Time.timeScale = 0f;
+        pausePanel.SetActive(true);
+    }
+
+    public void ResumeGame()
+    {
+        Time.timeScale = 1f;
+        pausePanel.SetActive(false);
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
     }
 
     public void HackMinigame()

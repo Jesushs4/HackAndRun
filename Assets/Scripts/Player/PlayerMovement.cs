@@ -25,7 +25,7 @@ public class PlayerMovement : MonoBehaviour
 
     private Transform currentPlatform;
     private Vector3 lastPlatformPosition;
-
+    
     public bool IsDashing { get => isDashing; set => isDashing = value; }
 
     private void Awake()
@@ -52,6 +52,7 @@ public class PlayerMovement : MonoBehaviour
         Jump();
         StartDash();
         JumpAnimation();
+        Attack();
 
     }
 
@@ -241,6 +242,14 @@ public class PlayerMovement : MonoBehaviour
             return false;
         }
         return true;
+    }
+
+    private void Attack()
+    {
+        if (Input.GetKeyDown(KeyCode.Mouse0)) {
+            animator.SetTrigger("Attack");
+            
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

@@ -1,4 +1,6 @@
 
+using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum EnemyType
@@ -23,6 +25,12 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private Vector2 direction = Vector2.right;
     [SerializeField] private float moveSpeed = 1;
 
+    [SerializeField] private int health = 3;
+    [SerializeField] private Color hurtColor = Color.red;
+    [SerializeField] private float blinkDuration = 1f;
+    [SerializeField] private int blinkCount = 4;
+    private bool isHurt = false;
+
     private void Awake()
     {
         groundDetection = transform.GetChild(0);
@@ -45,7 +53,15 @@ public class EnemyController : MonoBehaviour
 
     private void Update()
     {
-        EnemyMove();
+        if (!isHurt)
+        {
+            EnemyMove();
+        }
+
+        if (health <= 0)
+        {
+            Destroy(gameObject);
+        }
     }
 
     /// <summary>
@@ -70,6 +86,32 @@ public class EnemyController : MonoBehaviour
         }
         transform.position += (Vector3)direction * moveSpeed * Time.deltaTime;
 
+    }
+
+    private IEnumerator EnemyHurt()
+    {
+        isHurt = true;
+        Color originalColor = enemySprite.color;
+
+        for (int i = 0; i < blinkCount; i++)
+        {
+            enemySprite.color = hurtColor;
+            yield return new WaitForSeconds(blinkDuration / (blinkCount * 2));
+
+            enemySprite.color = originalColor;
+            yield return new WaitForSeconds(blinkDuration / (blinkCount * 2));
+        }
+        yield return new WaitForSeconds(1f);
+        isHurt = false;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Weapon"))
+        {
+            health--;
+            StartCoroutine(EnemyHurt());
+        }
     }
 
 }
