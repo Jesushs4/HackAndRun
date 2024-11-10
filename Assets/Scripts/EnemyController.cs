@@ -1,11 +1,11 @@
 
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public enum EnemyType
 {
-    Demon
+    Demon,
+    Cyborg
 }
 
 public class EnemyController : MonoBehaviour
@@ -16,6 +16,7 @@ public class EnemyController : MonoBehaviour
     // Components
     private Transform groundDetection;
     private SpriteRenderer enemySprite;
+    private Animator animator;
 
     // Ground check
     private LayerMask layer;
@@ -30,12 +31,17 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private float blinkDuration = 1f;
     [SerializeField] private int blinkCount = 4;
     private bool isHurt = false;
+    private bool isShooting = false;
+    private bool canWalk = true;
+    private ShootController shootController;
 
     private void Awake()
     {
         groundDetection = transform.GetChild(0);
         enemySprite = GetComponentInChildren<SpriteRenderer>();
         layer = LayerMask.GetMask("Ground");
+        animator = GetComponentInChildren<Animator>();
+        shootController = GetComponentInChildren<ShootController>();
     }
 
     /// <summary>
@@ -76,17 +82,53 @@ public class EnemyController : MonoBehaviour
             case EnemyType.Demon:
                 if (!GeneralDetection(rayDistance, Vector2.down) || GeneralDetection(rayDistance / 3, direction))
                 {
-                    direction = -direction;
-                    enemySprite.flipX = !enemySprite.flipX;
-                    groundDetection.localPosition = new Vector3(-groundDetection.localPosition.x, groundDetection.localPosition.y, groundDetection.localPosition.z);
+                    FlipDirection();
                 }
+                transform.position += (Vector3)direction * moveSpeed * Time.deltaTime;
 
 
                 break;
+            case EnemyType.Cyborg:
+                if (!isShooting)
+                {
+                    StartCoroutine(ShootAnimation());
+                }
+
+                if (canWalk)
+                {
+                    transform.position += (Vector3)direction * moveSpeed * Time.deltaTime;
+                }
+
+                if (!GeneralDetection(rayDistance, Vector2.down) || GeneralDetection(rayDistance / 3, direction))
+                {
+                    FlipDirection();
+                }
+                break;
         }
-        transform.position += (Vector3)direction * moveSpeed * Time.deltaTime;
+
+        
 
     }
+
+    private IEnumerator ShootAnimation()
+    {
+        isShooting = true;
+        yield return new WaitForSeconds(5f);
+        animator.SetTrigger("Shoot");
+        canWalk = false;
+        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
+        canWalk = true;
+        isShooting = false;
+    }
+
+
+    private void FlipDirection()
+    {
+        direction *= -1;
+        transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+
+    }
+
 
     private IEnumerator EnemyHurt()
     {
@@ -101,7 +143,6 @@ public class EnemyController : MonoBehaviour
             enemySprite.color = originalColor;
             yield return new WaitForSeconds(blinkDuration / (blinkCount * 2));
         }
-        yield return new WaitForSeconds(1f);
         isHurt = false;
     }
 
@@ -111,6 +152,11 @@ public class EnemyController : MonoBehaviour
         {
             health--;
             StartCoroutine(EnemyHurt());
+        }
+
+        if (collision.CompareTag("Player"))
+        {
+            collision.gameObject.GetComponentInParent<IDamageable>().TakeDamage();
         }
     }
 

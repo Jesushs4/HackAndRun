@@ -9,6 +9,7 @@ TagManager:
   - Enemy
   - MovingPlatform
   - Weapon
+  - Orb
   layers:
   - Default
   - TransparentFX
@@ -21,7 +22,7 @@ TagManager:
   - Ground
   - Screen
   - NPC
-  - 
+  - Weapon
   - 
   - 
   - 

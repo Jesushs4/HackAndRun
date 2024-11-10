@@ -22,6 +22,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float dashPower = 12f;
 
     private bool isHacking;
+    private bool isCrouching;
 
     private Transform currentPlatform;
     private Vector3 lastPlatformPosition;
@@ -41,18 +42,19 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-
+        
         if (!CanMove())
         {
             return;
         }
-
+        Crouch();
         StartHacking();
         FlipPlayer();
         Jump();
         StartDash();
         JumpAnimation();
         Attack();
+
 
     }
 
@@ -62,9 +64,11 @@ public class PlayerMovement : MonoBehaviour
         {
             return;
         }
+        MoveWithPlatform();
 
         MovePlayer();
-        MoveWithPlatform();
+        
+        
     }
 
     /// <summary>
@@ -117,17 +121,20 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     private void MovePlayer()
     {
-        hAxis = Input.GetAxisRaw("Horizontal");
-        if (hAxis != 0)
+        if (!isCrouching)
         {
-            animator.SetBool("isRunning", true);
-        } else
-        {
-            animator.SetBool("isRunning", false);
-        }
+            hAxis = Input.GetAxisRaw("Horizontal");
+            if (hAxis != 0)
+            {
+                animator.SetBool("isRunning", true);
+            }
+            else
+            {
+                animator.SetBool("isRunning", false);
+            }
 
-        rb.velocity = new Vector2(hAxis * moveSpeed, rb.velocity.y);
-        
+            rb.velocity = new Vector2(hAxis * moveSpeed, rb.velocity.y);
+        } 
     }
 
     /// <summary>
@@ -136,7 +143,7 @@ public class PlayerMovement : MonoBehaviour
     private void Jump()
     {
         
-        if (Input.GetButtonDown("Jump") && IsGrounded())
+        if (Input.GetButtonDown("Jump") && IsGrounded() && !isCrouching)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             AudioManager.Instance.Jump();
@@ -205,8 +212,8 @@ public class PlayerMovement : MonoBehaviour
     {
         canDash = false;
         IsDashing = true;
-        animator.SetBool("isDashing", true);
-        AudioManager.Instance.Dash();
+        animator.SetTrigger("Dash");
+        //AudioManager.Instance.Dash();
 
         float originalGravity = rb.gravityScale;
         rb.gravityScale = 0;
@@ -217,7 +224,7 @@ public class PlayerMovement : MonoBehaviour
 
         rb.gravityScale = originalGravity;
         IsDashing = false;
-        animator.SetBool("isDashing", false);
+        
 
         yield return new WaitForSeconds(dashCooldown);
         playerSprite.color = Color.yellow;
@@ -241,6 +248,7 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = new Vector2(0, rb.velocity.y);
             return false;
         }
+ 
         return true;
     }
 
@@ -248,7 +256,30 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Mouse0)) {
             animator.SetTrigger("Attack");
-            
+        }
+    }
+
+    private void Crouch()
+    {
+        if (Input.GetKey(KeyCode.S) && IsGrounded())
+        {
+            isCrouching = true;
+            rb.velocity = new Vector2(0, rb.velocity.y);
+            animator.SetBool("isCrouching", isCrouching);
+            return;
+        }
+        if (Input.GetKeyUp(KeyCode.S)) {
+            isCrouching = false;
+            animator.SetBool("isCrouching", isCrouching);
+            return;
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Orb"))
+        {
+            canDash = true;
         }
     }
 
@@ -260,6 +291,7 @@ public class PlayerMovement : MonoBehaviour
             currentPlatform = collision.transform;
             lastPlatformPosition = currentPlatform.position;
         }
+
     }
 
     private void OnCollisionExit2D(Collision2D collision)

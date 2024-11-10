@@ -30,6 +30,8 @@ public class AudioManager : MonoBehaviour
             DontDestroyOnLoad(this.gameObject);
         }
 
+        PlayMusicLevel(levelClips[SceneManager.GetActiveScene().buildIndex]);
+
     }
 
     private void Update()
@@ -38,9 +40,8 @@ public class AudioManager : MonoBehaviour
         if (currentScene != "")
         {
             if (currentScene != SceneManager.GetActiveScene().name) {
+                    PlayMusicLevel(levelClips[SceneManager.GetActiveScene().buildIndex]);
                 
-
-                PlayMusicLevel(levelClips[SceneManager.GetActiveScene().buildIndex-1]);
             }
         }
         currentScene = SceneManager.GetActiveScene().name;

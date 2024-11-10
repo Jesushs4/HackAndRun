@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DialogueBox : MonoBehaviour
 {
@@ -14,12 +15,13 @@ public class DialogueBox : MonoBehaviour
     private LayerMask playerLayer;
     [SerializeField] private GameObject keyLabel;
     [SerializeField] private GameObject dialoguePanel;
+    private Image panelImage;
 
 
     private void Awake()
     {
         playerLayer = LayerMask.GetMask("Player");
-
+        panelImage = dialoguePanel.GetComponent<Image>();
     }
 
     public void StartDialogue(string dialogue)
@@ -62,6 +64,11 @@ public class DialogueBox : MonoBehaviour
         return Physics2D.OverlapCircle(transform.position, 0.5f, playerLayer);
     }
 
+    private bool IsPlayerClose()
+    {
+        return Physics2D.OverlapCircle(transform.position, 5f, playerLayer);
+    }
+
 
     private void Update()
     {
@@ -69,21 +76,40 @@ public class DialogueBox : MonoBehaviour
         {
             if (!dialoguePanel.activeSelf)
             {
-                dialoguePanel.SetActive(true);
-                StartDialogue(texts[dialoguePosition]);
-                dialoguePosition++;
-                return;
+                ActivePanel();
             }
 
-            if (!isTyping && texts.Length > dialoguePosition)
+            if (!isTyping)
             {
-                dialogueText.text = "";
-                StartDialogue(texts[dialoguePosition]);
-                dialoguePosition++;
+                ManageDialogues();
             }
+        } else if (!IsPlayerClose() && dialoguePanel.activeSelf)
+            {
+            dialoguePanel.SetActive(false);
+            }
+    }
+
+    private void ActivePanel()
+    {
+        dialoguePanel.SetActive(true);
+        
+        StartDialogue(texts[dialoguePosition]);
+        dialoguePosition++;
+        return;
+    }
+
+    private void ManageDialogues()
+    {
+        if (texts.Length <= dialoguePosition)
+        {
+            dialoguePosition = 0;
+            dialoguePanel.SetActive(false);
+            return;
         }
 
-
-
+        dialogueText.text = "";
+        StartDialogue(texts[dialoguePosition]);
+        dialoguePosition++;
     }
+
 }
