@@ -17,8 +17,9 @@ public class PlayerMovement : MonoBehaviour
 
     private bool isDashing;
     private bool canDash = true;
+    private bool inResetDash = false;
     [SerializeField] private float dashTime = 0.2f;
-    [SerializeField] private float dashCooldown = 1f;
+    [SerializeField] private float dashCooldown = 0.1f;
     [SerializeField] private float dashPower = 12f;
 
     private bool isHacking;
@@ -46,6 +47,10 @@ public class PlayerMovement : MonoBehaviour
         if (!CanMove())
         {
             return;
+        }
+        if (IsGrounded() && !canDash && !inResetDash)
+        {
+            StartCoroutine(ResetDashCooldown());
         }
         Crouch();
         StartHacking();
@@ -213,7 +218,8 @@ public class PlayerMovement : MonoBehaviour
         canDash = false;
         IsDashing = true;
         animator.SetTrigger("Dash");
-        //AudioManager.Instance.Dash();
+        AudioManager.Instance.Dash();
+
 
         float originalGravity = rb.gravityScale;
         rb.gravityScale = 0;
@@ -222,15 +228,26 @@ public class PlayerMovement : MonoBehaviour
 
         yield return new WaitForSeconds(dashTime);
 
+
         rb.gravityScale = originalGravity;
         IsDashing = false;
         
+    }
 
+    /// <summary>
+    /// Starts the reset cooldown after touching the ground
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator ResetDashCooldown()
+    {
+        inResetDash = true;
         yield return new WaitForSeconds(dashCooldown);
+
         playerSprite.color = Color.yellow;
-        yield return new WaitForSeconds(0.15f);
+        yield return new WaitForSeconds(0.05f);
         playerSprite.color = Color.white;
         canDash = true;
+        inResetDash = false;
     }
 
     /// <summary>
@@ -252,13 +269,20 @@ public class PlayerMovement : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Makes the player attack if grounded
+    /// </summary>
     private void Attack()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0)) {
+        if (Input.GetKeyDown(KeyCode.Mouse0) && IsGrounded()) {
+            AudioManager.Instance.Attack();
             animator.SetTrigger("Attack");
-        }
+        }   
     }
 
+    /// <summary>
+    /// Makes the player crouch
+    /// </summary>
     private void Crouch()
     {
         if (Input.GetKey(KeyCode.S) && IsGrounded())

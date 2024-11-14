@@ -117,6 +117,27 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: ButtonMap6_1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 192
+        width: 96
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fe59d153f287ade4d8f4726f4d91064f
+      internalID: 539087369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -129,6 +150,7 @@ TextureImporter:
     secondaryTextures: []
     nameFileIdTable:
       ButtonMap6_0: 1276650954
+      ButtonMap6_1: 539087369
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

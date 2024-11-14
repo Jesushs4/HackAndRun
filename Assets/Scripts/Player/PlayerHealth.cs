@@ -34,6 +34,10 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     }
 
+    /// <summary>
+    /// Makes the player blink and waits for being able to take damage again
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator PlayerHurt()
     {
         canTakeDamage = false;
@@ -51,6 +55,10 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         canTakeDamage = true;
     }
 
+    /// <summary>
+    /// Death to player and game over
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator Death()
     {
         animator.SetTrigger("isDead");
@@ -58,6 +66,9 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         GameManager.Instance.GameOver();
     }
 
+    /// <summary>
+    /// Takes damage from enemy
+    /// </summary>
     public void TakeDamage()
     {
         if (!canTakeDamage || playerMovement.IsDashing) return;

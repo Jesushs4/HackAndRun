@@ -1,4 +1,6 @@
 
+using System;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -13,6 +15,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject winGamePanel;
     [SerializeField] GameObject hackPanel;
     [SerializeField] GameObject pausePanel;
+
+    private Button[] buttons;
 
     private HackMinigame hackMinigame;
 
@@ -33,45 +37,16 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
 
+
         Instance = this;
 
         gameOverPanel.SetActive(false);
         winGamePanel.SetActive(false);
 
-        starsWinObject = winGamePanel.transform.Find("Stars");
-        starsWinImages = starsWinObject.GetComponentsInChildren<Image>();
-
-        starsPauseObject = pausePanel.transform.Find("Stars");
-        starsPauseImages = starsPauseObject.GetComponentsInChildren<Image>();
-
-
-
-        for (int i = 0; i < starsPauseImages.Length && i < starsTimes.Length; i++)
-        {
-            int timeInSeconds = starsTimes[i];
-
-            string formattedTime = (i == 0)
-                ? "+" + string.Format("{0:D2}:{1:D2}", timeInSeconds / 60, timeInSeconds % 60)
-                : string.Format("{0:D2}:{1:D2}", timeInSeconds / 60, timeInSeconds % 60);
-
-            starsPauseImages[i].transform.GetChild(0).GetComponent<TMP_Text>().text = formattedTime;
-        }
-
-
-        for (int i = 0; i < starsWinImages.Length && i < starsTimes.Length; i++)
-        {
-            int timeInSeconds = starsTimes[i];
-
-            string formattedTime = (i == 0)
-                ? "+" + string.Format("{0:D2}:{1:D2}", timeInSeconds / 60, timeInSeconds % 60)
-                : string.Format("{0:D2}:{1:D2}", timeInSeconds / 60, timeInSeconds % 60);
-
-            starsWinImages[i].transform.GetChild(0).GetComponent<TMP_Text>().text = formattedTime;
-        }
-
-
-
         hackMinigame = hackPanel.GetComponent<HackMinigame>();
+        InitializePause();
+        InitializeWinScreen();
+        AssignButtonSounds();
 
         Time.timeScale = 1;
     }
@@ -81,14 +56,73 @@ public class GameManager : MonoBehaviour
         ManagePause();
     }
 
+    /// <summary>
+    /// Assign click sound to every button on the scene
+    /// </summary>
+    private void AssignButtonSounds()
+    {
+        buttons = pausePanel.GetComponentsInChildren<Button>().Concat(winGamePanel.GetComponentsInChildren<Button>()).Concat(gameOverPanel.GetComponentsInChildren<Button>()).ToArray();
+
+        foreach (var button in buttons)
+        {
+            button.onClick.AddListener(() =>
+            {
+                AudioManager.Instance.ButtonClick();
+            });
+        }
+    }
+
+    /// <summary>
+    /// Initializes pause menu with respective star timers
+    /// </summary>
+    private void InitializePause()
+    {
+        starsPauseObject = pausePanel.transform.Find("Stars");
+        starsPauseImages = starsPauseObject.GetComponentsInChildren<Image>();
+
+        for (int i = 0; i < starsPauseImages.Length && i < starsTimes.Length; i++)
+        {
+            int timeInSeconds = starsTimes[i];
+
+            string formattedTime = (i == 0)
+                ? "<" + string.Format("{0:D2}:{1:D2}", timeInSeconds / 60, timeInSeconds % 60)
+                : ">" + string.Format("{0:D2}:{1:D2}", timeInSeconds / 60, timeInSeconds % 60);
+
+            starsPauseImages[i].transform.GetChild(0).GetComponent<TMP_Text>().text = formattedTime;
+        }
+    }
+
+    /// <summary>
+    /// Initializes win screen menu with respective star timers
+    /// </summary>
+    private void InitializeWinScreen()
+    {
+        starsWinObject = winGamePanel.transform.Find("Stars");
+        starsWinImages = starsWinObject.GetComponentsInChildren<Image>();
+
+        for (int i = 0; i < starsWinImages.Length && i < starsTimes.Length; i++)
+        {
+            int timeInSeconds = starsTimes[i];
+
+            string formattedTime = (i == 0)
+                ? "<" + string.Format("{0:D2}:{1:D2}", timeInSeconds / 60, timeInSeconds % 60)
+                : ">" + string.Format("{0:D2}:{1:D2}", timeInSeconds / 60, timeInSeconds % 60);
+
+            starsWinImages[i].transform.GetChild(0).GetComponent<TMP_Text>().text = formattedTime;
+        }
+    }
+
+    /// <summary>
+    /// Manages the pause menu
+    /// </summary>
     private void ManagePause()
     {
 
-        if (starsTimes[1] <= timer)
+        if (starsTimes[2] <= timer)
         {
             starsPauseImages[2].color = Color.black;
         }
-        if (starsTimes[0] <= timer)
+        if (starsTimes[1] <= timer)
         {
             starsPauseImages[1].color = Color.black;
         }
@@ -106,6 +140,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Saves the stars after winning the game
+    /// </summary>
+    /// <param name="stars"></param>
     private void SaveStars(int stars)
     {
         if (PlayerPrefs.GetInt(GameConstants.LEVEL_STARS + SceneManager.GetActiveScene().buildIndex) < stars)
@@ -114,20 +152,26 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Manages the win screen
+    /// </summary>
     public void WinGame()
     {
         if (SceneManager.GetActiveScene().buildIndex > PlayerPrefs.GetInt(GameConstants.MAXLEVEL_KEY))
         {
             PlayerPrefs.SetInt(GameConstants.MAXLEVEL_KEY, SceneManager.GetActiveScene().buildIndex);
         }
+
+        AudioManager.Instance.WinAudio();
+
         
         winGamePanel.SetActive(true);
-        if (starsTimes[1] > timer)
+        if (starsTimes[2] > timer)
         {
             SaveStars(3);
             starsWinImages[2].color = Color.white;
         }
-        if (starsTimes[0] > timer) {
+        if (starsTimes[1] > timer) {
             SaveStars(2);
             starsWinImages[1].color = Color.white;
         }
@@ -160,6 +204,8 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
+        AudioManager.Instance.LoseAudio();
+
         gameOverPanel.SetActive(true);
         Time.timeScale = 0f;
     }

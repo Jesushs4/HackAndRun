@@ -64,6 +64,7 @@ public class MenuManager : MonoBehaviour
             buttons[index].GetComponent<Button>().onClick.AddListener(() =>
             {
                 ChangeScene(index+1);
+                AudioManager.Instance.ButtonClick();
             });
             Transform levelNumberParent = buttons[index].transform.GetChild(0);
             var levelStars = levelNumberParent.GetComponentsInChildren<SpriteRenderer>();
