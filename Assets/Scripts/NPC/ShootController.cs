@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 public class ShootController : MonoBehaviour
@@ -23,5 +22,7 @@ public class ShootController : MonoBehaviour
         newBullet.transform.localScale = transform.parent.transform.localScale;
     }
 
-    
+
+
+
 }

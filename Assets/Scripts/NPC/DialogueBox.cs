@@ -16,31 +16,36 @@ public class DialogueBox : MonoBehaviour
     [SerializeField] private GameObject keyLabel;
     [SerializeField] private GameObject dialoguePanel;
     private Image panelImage;
+    private GameObject nextTextLabel;
 
 
     private void Awake()
     {
         playerLayer = LayerMask.GetMask("Player");
         panelImage = dialoguePanel.GetComponent<Image>();
+        nextTextLabel = dialoguePanel.transform.GetChild(1).gameObject;
     }
 
     private void Update()
     {
         if (IsPlayerInRange() && Input.GetKeyDown(KeyCode.E))
         {
+            GameManager.Instance.InDialogue = true;
             if (!dialoguePanel.activeSelf)
             {
                 ActivePanel();
+                nextTextLabel.SetActive(false);
             }
 
             if (!isTyping)
             {
-                
+                nextTextLabel.SetActive(false);
                 ManageDialogues();
             }
         }
         else if (!IsPlayerClose() && dialoguePanel.activeSelf)
         {
+            GameManager.Instance.InDialogue = false;
             dialoguePanel.SetActive(false);
         }
     }
@@ -87,6 +92,7 @@ public class DialogueBox : MonoBehaviour
         AudioManager.Instance.DialogueStop();
 
         isTyping = false;
+        nextTextLabel.SetActive(true);
 
     }
 
@@ -131,6 +137,7 @@ public class DialogueBox : MonoBehaviour
         {
             dialoguePosition = 0;
             dialoguePanel.SetActive(false);
+            GameManager.Instance.InDialogue = false;
             return;
         }
 

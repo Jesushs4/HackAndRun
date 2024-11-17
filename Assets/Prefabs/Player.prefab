@@ -290,6 +290,7 @@ GameObject:
   - component: {fileID: 1191070637309866622}
   - component: {fileID: 8995704623921883768}
   - component: {fileID: 1863303054545275462}
+  - component: {fileID: 1753761461487829517}
   m_Layer: 6
   m_Name: PlayerSprite
   m_TagString: Player
@@ -421,3 +422,15 @@ CapsuleCollider2D:
   m_Offset: {x: -0.017793655, y: 0}
   m_Size: {x: 0.36160088, y: 1}
   m_Direction: 0
+--- !u!114 &1753761461487829517
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6824252665020512497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a118b92159ce794abdcc1d2301ba96a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

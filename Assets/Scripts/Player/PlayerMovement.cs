@@ -15,6 +15,13 @@ public class PlayerMovement : MonoBehaviour
     private Animator animator;
     private SpriteRenderer playerSprite;
 
+    private float coyoteTime = 0.2f;
+    private float coyoteTimeCounter = 0.2f;
+
+    private float jumpBufferTime = 0.2f;
+    private float jumpBufferCounter = 0f;
+
+
     private bool isDashing;
     private bool canDash = true;
     private bool inResetDash = false;
@@ -48,15 +55,36 @@ public class PlayerMovement : MonoBehaviour
         {
             return;
         }
-        if (IsGrounded() && !canDash && !inResetDash)
+        if (IsGrounded() )
         {
-            StartCoroutine(ResetDashCooldown());
+            coyoteTimeCounter = coyoteTime;
+            if (!canDash && !inResetDash)
+            {
+                StartCoroutine(ResetDashCooldown());
+            }
+        } else
+        {
+            coyoteTimeCounter -= Time.deltaTime;
         }
+
+        if (Input.GetButtonDown("Jump"))
+        {
+            jumpBufferCounter = jumpBufferTime;
+        } else
+        {
+            jumpBufferCounter -= Time.deltaTime;
+        }
+
         Crouch();
         StartHacking();
         FlipPlayer();
-        Jump();
-        StartDash();
+        if (!isCrouching)
+        {
+            Jump();
+            StartDash();
+        }
+        
+        
         JumpAnimation();
         Attack();
 
@@ -92,8 +120,8 @@ public class PlayerMovement : MonoBehaviour
     private IEnumerator UseAnimation()
     {
         animator.SetTrigger("isUsing");
-        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
-        isHacking = true;
+        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length-0.3f);
+        
         GameManager.Instance.HackMinigame();
     }
 
@@ -102,8 +130,9 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     private void StartHacking()
     {
-        if (IsPlayerInsideHack() && Input.GetKeyDown(KeyCode.E))
+        if (IsPlayerInsideHack() && Input.GetKeyDown(KeyCode.E) && !isHacking)
         {
+            isHacking = true;
             StartCoroutine(UseAnimation());
         }
     }
@@ -148,15 +177,18 @@ public class PlayerMovement : MonoBehaviour
     private void Jump()
     {
         
-        if (Input.GetButtonDown("Jump") && IsGrounded() && !isCrouching)
+        if (jumpBufferCounter > 0f && coyoteTimeCounter > 0f)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            jumpBufferCounter = 0f;
             AudioManager.Instance.Jump();
         }
 
         if (Input.GetButtonUp("Jump") && rb.velocity.y > 0)
         {
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
+
+            coyoteTimeCounter = 0f;
         }
     }
 
@@ -274,11 +306,12 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     private void Attack()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0) && IsGrounded()) {
-            AudioManager.Instance.Attack();
+        if ((Input.GetKeyDown(KeyCode.J) || Input.GetKeyDown(KeyCode.Z)) && IsGrounded()) {
             animator.SetTrigger("Attack");
         }   
     }
+
+
 
     /// <summary>
     /// Makes the player crouch

@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 1029814600304542893}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.20377064, y: -1.333097, z: -43957.695}
+  m_LocalPosition: {x: 0.306, y: -0.605, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -62,8 +62,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 826226440409684337}
   - {fileID: 3188153502403826742}
+  - {fileID: 826226440409684337}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3205863542439552309
@@ -81,6 +81,11 @@ MonoBehaviour:
   enemyType: 0
   direction: {x: 1, y: 0}
   moveSpeed: 1
+  health: 3
+  hurtColor: {r: 1, g: 0, b: 0, a: 1}
+  blinkDuration: 1
+  blinkCount: 4
+  canPatrol: 1
 --- !u!70 &968707776656715753
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -127,6 +132,7 @@ GameObject:
   - component: {fileID: 826226440409684337}
   - component: {fileID: 6786903390407326009}
   - component: {fileID: 9195510116644905256}
+  - component: {fileID: 7498033453469387489}
   m_Layer: 0
   m_Name: DemonEnemy
   m_TagString: Enemy
@@ -189,7 +195,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 3
   m_Sprite: {fileID: 426082066, guid: 08bd69a5280d7af45b9b799da316defe, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -222,3 +228,15 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7498033453469387489
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7379862788150349422}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99664367233b657498dbe4f662954b8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

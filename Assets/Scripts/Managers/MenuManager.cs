@@ -61,7 +61,18 @@ public class MenuManager : MonoBehaviour
         for (int i = 0; i < buttons.Length; i++)
         {
             int index = i;
-            buttons[index].GetComponent<Button>().onClick.AddListener(() =>
+            Button button = buttons[index].GetComponent<Button>();
+
+            if (index > 0)
+            {
+                int previousLevelStars = PlayerPrefs.GetInt(GameConstants.LEVEL_STARS + index);
+                if (previousLevelStars <= 0)
+                {
+                    button.interactable = false;
+                }
+            }
+
+            button.onClick.AddListener(() =>
             {
                 ChangeScene(index+1);
                 AudioManager.Instance.ButtonClick();

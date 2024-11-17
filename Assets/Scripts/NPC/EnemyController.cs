@@ -1,4 +1,3 @@
-
 using System.Collections;
 using UnityEngine;
 
@@ -17,6 +16,7 @@ public class EnemyController : MonoBehaviour
     private Transform groundDetection;
     private SpriteRenderer enemySprite;
     private Animator animator;
+    private CapsuleCollider2D capsuleCollider;
 
     // Ground check
     private LayerMask layer;
@@ -35,6 +35,7 @@ public class EnemyController : MonoBehaviour
     private bool isHurt = false;
     private bool isShooting = false;
     private bool canWalk = true;
+    private bool isDead = false;
     private ShootController shootController;
 
     private void Awake()
@@ -45,6 +46,8 @@ public class EnemyController : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
         shootController = GetComponentInChildren<ShootController>();
         playerLayer = LayerMask.GetMask("Player");
+        animator.SetBool("canMove", canPatrol);
+        capsuleCollider = GetComponentInChildren<CapsuleCollider2D>();
     }
 
     /// <summary>
@@ -62,28 +65,55 @@ public class EnemyController : MonoBehaviour
 
     private void Update()
     {
-        if (!isHurt)
+        if (!isHurt && !isDead)
         {
             EnemyMove();
         }
 
-        if (health <= 0)
+        if (health <= 0 && !isDead)
         {
-            Destroy(gameObject);
+            Death();
         }
     }
+
+    /// <summary>
+    /// Manages the enemy death
+    /// </summary>
+    private void Death()
+    {
+        animator.SetTrigger("Dead");
+
+        isDead = true;
+        canPatrol = false;
+        canWalk = false;
+        capsuleCollider.enabled = false;
+        AudioManager.Instance.EnemyDeath();
+        //StartCoroutine(WaitForDeathAnimation());
+    }
+
+    /// <summary>
+    /// Waits for the death animation to destroy the enemy entity
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator WaitForDeathAnimation()
+    {
+        Debug.Log(animator.GetCurrentAnimatorStateInfo(0).length);
+        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
+        Destroy(gameObject);
+    }
+
 
     /// <summary>
     /// Manage the enemy movement
     /// </summary>
     private void EnemyMove()
-    {
+        {
         // If not detect ground or detect a wall change direction
 
         switch (enemyType)
         {
             case EnemyType.Demon:
-                if (!GeneralDetection(rayDistance, Vector2.down) || GeneralDetection(rayDistance / 3, direction))
+                if (!GeneralDetection(rayDistance/2, Vector2.down) || GeneralDetection(rayDistance / 5, direction))
                 {
                     FlipDirection();
                 }
@@ -94,7 +124,7 @@ public class EnemyController : MonoBehaviour
             case EnemyType.Cyborg:
                 if (PlayerInSight(direction))
                 {
-                    if (!isShooting)
+                    if (!isShooting && !isHurt)
                     ShootAnimation();
                 }
 
@@ -127,9 +157,7 @@ public class EnemyController : MonoBehaviour
         {
             Vector2 rayOrigin = new Vector2(transform.position.x, transform.position.y + height);
 
-            RaycastHit2D hit = Physics2D.Raycast(rayOrigin, dir, 5f, playerLayer);
-
-            Debug.DrawLine(rayOrigin, dir, Color.red);
+            RaycastHit2D hit = Physics2D.Raycast(rayOrigin, dir, 5f, LayerMask.GetMask("Player", "Ground"));
 
             if (hit.collider != null && hit.collider.CompareTag("Player"))
             {
@@ -175,7 +203,8 @@ public class EnemyController : MonoBehaviour
     {
         isHurt = true;
         Color originalColor = enemySprite.color;
-
+        animator.SetBool("isShooting", false);
+        animator.SetBool("canMove", false);
         for (int i = 0; i < blinkCount; i++)
         {
             enemySprite.color = hurtColor;
@@ -185,6 +214,8 @@ public class EnemyController : MonoBehaviour
             yield return new WaitForSeconds(blinkDuration / (blinkCount * 2));
         }
         isHurt = false;
+        animator.SetBool("isShooting", true);
+        animator.SetBool("canMove", canPatrol);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -193,7 +224,10 @@ public class EnemyController : MonoBehaviour
         {
             health--;
             AudioManager.Instance.EnemyHit();
-            StartCoroutine(EnemyHurt());
+            if (!isHurt)
+            {
+                StartCoroutine(EnemyHurt());
+            }
         }
 
         if (collision.CompareTag("Player"))

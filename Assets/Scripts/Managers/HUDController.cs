@@ -1,4 +1,3 @@
-
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,7 +15,7 @@ public class HUDController : MonoBehaviour
     [SerializeField] private GameObject healthObject;
     private Image[] healthBar;
 
-    
+
     private void Awake()
     {
         healthBar = healthObject.GetComponentsInChildren<Image>();
@@ -27,7 +26,11 @@ public class HUDController : MonoBehaviour
         
         UpdateHealthBar();
 
-        GameManager.Instance.Timer += Time.deltaTime;
+        if (!GameManager.Instance.InDialogue)
+        {
+            GameManager.Instance.Timer += Time.deltaTime;
+        }
+        
 
         seconds = (int)GameManager.Instance.Timer % 60;
         minutes = (int)GameManager.Instance.Timer / 60;

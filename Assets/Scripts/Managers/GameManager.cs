@@ -1,5 +1,3 @@
-
-using System;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -30,6 +28,10 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private int health = 3;
     private float timer = 0;
+
+    private bool inDialogue = false;
+
+    public bool InDialogue { get => inDialogue; set => inDialogue = value; }
 
     public int Health { get => health; set => health = value; }
     public float Timer { get => timer; set => timer = value; }

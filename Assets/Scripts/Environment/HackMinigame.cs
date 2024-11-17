@@ -85,7 +85,7 @@ public class HackMinigame : MonoBehaviour
         if (isNeedleMoving)
         {
             needle.localPosition = new Vector3(needle.localPosition.x + 1 * Time.deltaTime * direction, needle.localPosition.y, needle.localPosition.z);
-            if (needle.localPosition.x >= 0.5 || needle.localPosition.x <= -0.5)
+            if (needle.localPosition.x > 0.49 || needle.localPosition.x < -0.49)
             {
                 direction *= -1;
             }

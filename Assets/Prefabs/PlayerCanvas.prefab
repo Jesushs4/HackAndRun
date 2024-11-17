@@ -2371,7 +2371,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07bfcae49927755439017b4496171dec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hackingNeeded: 3
+  hackingNeeded: 5
   hackingProgress: {fileID: 6573334651633201625}
   hackingFail: {fileID: 1392532057882836633}
   vCam: {fileID: 0}
@@ -2549,7 +2549,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: HACK PANEL
+  m_text: CYBER OS 4.3
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
   m_sharedMaterial: {fileID: 2140032, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
@@ -2612,7 +2612,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -94.32944, y: 0, z: -98.717926, w: 0}
+  m_margin: {x: -132.11855, y: 0, z: -119.06596, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0

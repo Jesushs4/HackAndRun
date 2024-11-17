@@ -19,6 +19,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioSource enemyHit;
     [SerializeField] private AudioSource attack;
     [SerializeField] private AudioSource orbPickUp;
+    [SerializeField] private AudioSource enemyDeath;
 
 
 
@@ -105,7 +106,7 @@ public class AudioManager : MonoBehaviour
 
     public void OrbPickUp() { orbPickUp.Play(); }
 
-
+    public void EnemyDeath() { enemyDeath.Play(); }
 
 
 
